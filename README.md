@@ -1,8 +1,8 @@
 # AJAX로 게시판 만들기
 
 + 메인페이지 (C/R/U/D)
-+ 서브쿼리 (freeBoardGetList)
-+ Controller (try ~ catch) 활용
++ 서브쿼리 (freeBoardGetList)의 중요성
++ Controller (try ~ catch) 활용, AJAX로 Exception 출력하기!
 
 > Main Controller
 ```java
