@@ -377,3 +377,110 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
   }
 </script>
 ```
+> Insert View
+```javascript
+<script type="text/javascript">
+// null
+$(document).ready(function() {
+    $('#submitBtn').on('click', function() {
+        var codeType = $('#selectedOption').val();
+        var name = $('#name').val();
+        var content = $('#content').val();
+        var title = $('#title').val();
+
+    if (name == "" || name.length == 0) {
+        alert('이름을 입력해주세요!');
+        $('#name').focus();
+        return false;
+    } else if (title == "" || title.length == 0) {
+        alert('이름을 입력해주세요!');
+        $('#title').focus();
+        return false;
+    } else {
+    // cf 조건문 수행
+    var cf = confirm('작성하시겠습니까?');
+    if (cf) {
+        $.ajax({
+            url: "./freeBoardInsertPro.ino",
+            type: 'post',
+            data: {
+                codeType: codeType,
+                name: name,
+                title: title,
+                content: content
+            },
+            success: function(data) {
+                if (data.result) {
+                    alert("게시글이 등록되었습니다.");
+                    var agree = confirm('메인페이지로 이동하시겠습니까?');
+                if (agree) {
+                    location.href = "./main.ino";
+                } else {
+                    location.href = "./freeBoardDetail.ino?num=" + data.maxNum;
+                }
+        } else {
+                // Exception 발생 시
+                alert('게시글 등록을 실패하였습니다.');
+                var dataMessage = data.message;
+                $('#printMessage').html(dataMessage);
+            }
+        },
+            error: function(e) {
+                console.log(e);
+                    }
+                });
+            }
+        }; 
+    });
+});
+</script>
+```
+> Delete View
+```javascript
+<script type="text/javascript">
+// AJAX로 게시글 수정, 삭제
+$(function() {
+    $('#modifyDetail').on('click', function() {
+            var codeType = $('#codeType').val();
+            var num = $('#num').val();
+            var content = $('#content').val();
+            var title = $('#title').val();
+
+            // cf 조건문 수행
+            var cf = confirm('수정하시겠습니까?');
+            if (cf) {
+                $.ajax({
+                    url: "./freeBoardModify.ino",
+                    type: 'post',
+                    data: {
+                        codeType: codeType,
+			num: num,
+			title: title,
+			content: content
+			},
+		    success: function(data) {
+			if (data.result) {
+			    // try 성공
+			    alert('게시글 수정을 성공하였습니다.');
+			    var agree = confirm('메인페이지로 이동하시겠습니까?');
+			    if (agree) {
+			        location.href = "./main.ino";	
+			    } else {
+			        location.href = "./freeBoardDetail.ino?num=" + data.num;
+			    }
+			} else {
+			    // Exception 발생 시 
+			    alert('게시글 수정을 실패하였습니다.');
+			    dataMessage = data.message;
+			    $('#printMessage').html(dataMessage);
+			    }
+			},
+			error: function(e) {
+			       console.log(e);
+                }
+            });
+        }
+    });
+});
+</script>
+```
