@@ -1,7 +1,7 @@
 # AJAX로 게시판 만들기
 
 + 메인페이지 (C/R/U/D)
-+ 서브쿼리
++ 서브쿼리 (freeBoardGetList)
 + Controller (try ~ catch) 활용
 
 > Main Controller
