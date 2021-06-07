@@ -8,29 +8,33 @@
 ```java
 @RequestMapping(value = "/main.ino", method = RequestMethod.GET)
 public ModelAndView main(HttpServletRequest request,
-    @RequestParam(value = "page", defaultValue = "1", required = false) int page,
-    @RequestParam(value = "listLimit", defaultValue = "10", required = false) int listLimit) {
-  ModelAndView model = new ModelAndView();
-  Map<String, Object> map = new HashMap<>();
-  List<FreeBoardDto> list = null;
-  PageInfo pageInfo = null;
-  int listCount = 0;
-  int pageLimit = 5;
+		@RequestParam(value = "page", defaultValue = "1", required = false) int page,
+		@RequestParam(value = "listLimit", defaultValue = "10", required = false) int listLimit
+		) {
+	ModelAndView model = new ModelAndView();
+	Map<String, Object> map = new HashMap<>();
+	List<Map<String, Object>> codeName = null;
+	List<FreeBoardDto> list = null;
+	PageInfo pageInfo = null;
+	int listCount = 0;
+	int pageLimit = 5;
 
-  listCount = freeBoardService.freeBoardCount(map);
-  // pageInfo = new PageInfo(현재페이지, 보여질페이지번호개수, 전체리스트개수, 한페이지의표시될리스트수);
-  pageInfo = new PageInfo(page, pageLimit, listCount, listLimit);
+	codeName = freeBoardService.searchGroup();
+	model.addObject("codeName", codeName);
 
-  map.put("listCount", listCount);
-  map.put("pageInfo", pageInfo);
-  list = freeBoardService.freeBoardList(map);
+	listCount = freeBoardService.freeBoardCount(map);
+	// pageInfo = new PageInfo(현재페이지, 보여질페이지번호개수, 전체리스트개수, 한페이지의표시될리스트수);
+	pageInfo = new PageInfo(page, pageLimit, listCount, listLimit);
 
-  model.addObject("freeBoardList", list);
-  model.addObject("pageInfo", pageInfo);
-  model.setViewName("boardMain");
-  return model;
+	map.put("listCount", listCount);
+	map.put("pageInfo", pageInfo);
+	list = freeBoardService.freeBoardList(map);
+
+	model.addObject("freeBoardList", list);
+	model.addObject("pageInfo", pageInfo);
+	model.setViewName("boardMain");
+	return model;
 }
-
 
 @ResponseBody
 @RequestMapping("/list.ino")
