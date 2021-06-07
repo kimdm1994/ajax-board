@@ -1,6 +1,8 @@
 # AJAX로 게시판 만들기
 
 + 메인페이지 (C/R/U/D)
++ 서브쿼리
++ Controller (try ~ catch) 활용
 
 > Main Controller
 ```java
@@ -126,87 +128,100 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
 
 > Main Mapper
 ```xml
+<mapper namespace="ino.web.freeBoard.mapper.FreeBoardMapper">
+<!-- 
+	1. #{value} 에는 따음표 쓰지말기.. 
+	2. searchType 넘길 때 int형으로 넘어와서 .toString() 해줘야 한다. 
+	3. SubQuery는 하나의 값만 리턴한다. (freeBoardGetList 참고, 매번 추가/삭제 부분을 서브쿼리를 사용함으로서 유지보수에 도움을 준다.)
+-->
 <sql id="search">
-  <if test="searchType != null">
-    <if test="searchType == '1'.toString()"> <!-- 타입 -->
-      AND CODE_TYPE LIKE '%'||#{keyword}||'%'
-    </if> <!-- 제목 -->
-    <if test="searchType == '2'.toString()">
-      AND TITLE LIKE '%'||#{keyword}||'%'
-    </if> <!-- 내용 -->
-    <if test="searchType == '3'.toString()">
-      AND CONTENT LIKE '%'||#{keyword}||'%'
-    </if> <!-- 번호는 정확히 입력해야만? -->
-    <if test="searchType == '4'.toString()">
-      AND NUM LIKE #{keyword}
-    </if> <!-- 글쓴이 -->
-    <if test="searchType == '5'.toString()">
-      AND NAME LIKE '%'||#{keyword}||'%'
-    </if> <!-- TO_CHAR : java.sql.SQLException: ORA-01481: invalid number format model, REGDATE 는 DATE 형식이기 때문에 CHAR로 바꾸어주어야 한다. -->
-    <if test="searchType == '6'.toString()">
-      AND TO_CHAR(REGDATE, 'YYYY/MM/DD') BETWEEN TO_CHAR(#{startDate}, 'YYYY/MM/DD') AND TO_CHAR(#{endDate}, 'YYYY/MM/DD')
-    </if>
-  </if>
+	<if test="searchType != null">
+		<if test="searchType == '1'.toString()"> <!-- 타입 -->
+			AND CODE_TYPE LIKE '%'||#{keyword}||'%'
+		</if> <!-- 제목 -->
+		<if test="searchType == '2'.toString()">
+			AND TITLE LIKE '%'||#{keyword}||'%'
+		</if> <!-- 내용 -->
+		<if test="searchType == '3'.toString()">
+			AND CONTENT LIKE '%'||#{keyword}||'%'
+		</if> <!-- 번호는 정확히 입력해야만? -->
+		<if test="searchType == '4'.toString()">
+			AND NUM LIKE #{keyword}
+		</if> <!-- 글쓴이 -->
+		<if test="searchType == '5'.toString()">
+			AND NAME LIKE '%'||#{keyword}||'%'
+		</if> <!-- TO_CHAR : java.sql.SQLException: ORA-01481: invalid number format model, REGDATE 는 DATE 형식이기 때문에 CHAR로 바꾸어주어야 한다. -->
+		<if test="searchType == '6'.toString()">
+			AND TO_CHAR(REGDATE, 'YYYY/MM/DD') BETWEEN TO_CHAR(#{startDate}, 'YYYY/MM/DD') AND TO_CHAR(#{endDate}, 'YYYY/MM/DD')
+		</if>
+	</if>
 </sql>
+
+<select id="searchGroup" resultType="Map">
+	select d.code_name,d.code
+	from codem m
+	inner join coded d on m.gr_code = d.gr_code and m.gr_code='GR002'
+</select>
 
 <!-- resultType="ino.web.board.dto.BoardDto" -->
 <select id="freeBoardGetList" resultType="freeBoardDto" parameterType="map"> 
-  SELECT RNUM, CASE CODE_TYPE WHEN '01' THEN '자유' WHEN '02' THEN '익명' WHEN '03' THEN 'QnA' END as codeType, NUM, NAME, TITLE, CONTENT, TO_CHAR(REGDATE, 'YYYY/MM/DD') AS REGDATE
-  FROM (SELECT ROWNUM AS RNUM, S.*
-        FROM FREEBOARD S
-          where 1=1
-        <include refid="search" />
-        ORDER BY NUM ASC
-        ) T
-  WHERE RNUM BETWEEN (#{pageInfo.currentPage} * #{pageInfo.listLimit} - (#{pageInfo.listLimit} - 1)) AND (#{pageInfo.currentPage} * #{pageInfo.listLimit})
+	SELECT RNUM, (Select code_name from codem a, coded b where  a.gr_code = b.gr_code and a.gr_code='GR002' and b.code = T.CODE_TYPE) as codeType, NUM, NAME, TITLE, CONTENT, TO_CHAR(REGDATE, 'YYYY/MM/DD') AS REGDATE
+	FROM (SELECT ROWNUM AS RNUM, S.*
+	      FROM FREEBOARD S
+	  where 1=1
+	      <include refid="search" />
+	      ORDER BY NUM ASC
+	      ) T
+	WHERE RNUM BETWEEN (#{pageInfo.currentPage} * #{pageInfo.listLimit} - (#{pageInfo.listLimit} - 1)) AND (#{pageInfo.currentPage} * #{pageInfo.listLimit})
 </select>
 
 <insert id="freeBoardInsertPro" parameterType="Map">
-  INSERT INTO FREEBOARD(CODE_TYPE, NUM, TITLE, NAME, REGDATE, CONTENT)
-  VALUES( #{codeType}, SEQ_NUM.NEXTVAL, #{title}, #{name}, SYSDATE, #{content})
+	INSERT INTO FREEBOARD(CODE_TYPE, NUM, TITLE, NAME, REGDATE, CONTENT)
+	VALUES( #{codeType}, SEQ_NUM.NEXTVAL, #{title}, #{name}, SYSDATE, #{content})
 </insert>
 
 <select id="freeBoardDetailByNum" resultType="freeBoardDto" parameterType="int">
-  SELECT CODE_TYPE, NUM, TITLE, NAME, TO_CHAR(REGDATE,'YYYY/MM/DD') REGDATE, CONTENT FROM FREEBOARD
-  WHERE NUM=#{num}
+	SELECT CODE_TYPE, NUM, TITLE, NAME, TO_CHAR(REGDATE,'YYYY/MM/DD') REGDATE, CONTENT FROM FREEBOARD
+	WHERE NUM=#{num}
 </select>
 
 <select id="freeBoardNewNum" resultType="int">
-  SELECT MAX(NUM)
-  FROM FREEBOARD
+	SELECT MAX(NUM)
+	FROM FREEBOARD
 </select>
 
 <select id="freeBoardCount" resultType="int"  parameterType="map">
-  SELECT COUNT(*)
-  FROM FREEBOARD
-  where 1=1
-  <include refid="search" />
+	SELECT COUNT(*)
+	FROM FREEBOARD
+	where 1=1
+	<include refid="search" />
 </select>
 
 <update id="freeBoardModify" parameterType="map">
-  UPDATE FREEBOARD
-  SET CODE_TYPE = #{codeType}, TITLE = #{title}, CONTENT = #{content}
-  WHERE NUM = #{num}
+	UPDATE FREEBOARD
+	SET CODE_TYPE = #{codeType}, TITLE = #{title}, CONTENT = #{content}
+	WHERE NUM = #{num}
 </update>
 
 <update id="freeBoardDelete" parameterType="int">
-  DELETE FROM FREEBOARD
-  WHERE NUM = #{num}
+	DELETE FROM FREEBOARD
+	WHERE NUM = #{num}
 </update>
 
 <!-- Mybatis 내에서 forEach문으로 처리 -->
 <update id="deleteBoardTest" parameterType="map">
-  DELETE FROM FREEBOARD
-  WHERE NUM IN
-    <foreach collection="arrayValue" item="num" open="(" separator="," close=")">
-      #{num}
-    </foreach>
+	DELETE FROM FREEBOARD
+	WHERE NUM IN
+		<foreach collection="arrayValue" item="num" open="(" separator="," close=")">
+			#{num}
+		</foreach>
 </update>
 
 <select id="findNameByNum" parameterType="int" resultType="freeBoardDto">
-  SELECT CODE_TYPE as codeType, NAME, NUM, TITLE, CONTENT FROM FREEBOARD 
-  WHERE NUM = #{num}
+	SELECT CODE_TYPE as codeType, NAME, NUM, TITLE, CONTENT FROM FREEBOARD 
+	WHERE NUM = #{num}
 </select>
+</mapper>
 ```
 
 > Main View
