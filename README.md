@@ -238,7 +238,7 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
 
     // 전체 체크박스 클릭
     deleteBoxAll.on('click', function() {
-      for (var i = 0 ; i < deleteBox.length ; i++) {
+      for (var i = 0; i < deleteBox.length; i++) {
         deleteBox[i].checked = this.checked;
       }
     });
@@ -256,7 +256,7 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
     deleteButton.on('click', function() {
       var arrayValue = new Array(); // 체크 값 저장할 배열
       var list = $('input[name="deleteBox"]');
-      for (var i = 0 ; i < list.length ; i++) {
+      for (var i = 0; i < list.length; i++) {
         if (list[i].checked) {
           arrayValue.push(list[i].value);
         }
@@ -271,12 +271,12 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
             type: 'post',
             traditional: true, // 배열로 전송
             data: {
-              arrayValue: arrayValue
+              arrayValue: arrayValue,
             },
             success: function(data) {
               if (data.result) {
                 alert('성공적으로 삭제되었습니다.');
-                location.replace("./main.ino"); // 새로고침
+                location.replace('./main.ino'); // 새로고침
               } else {
                 alert('삭제를 실패하였습니다.');
                 return;
@@ -284,7 +284,7 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
             },
             error: function(e) {
               alert('삭제하는데 오류가 발생했습니다.');
-            }
+            },
           });
         }
       }
@@ -292,57 +292,104 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
 
     // 검색관련 SelectBox
     var selected = $('#searchType');
-    selected.change(function () {
+    selected.change(function() {
       if (selected.val() == 0) {
-        if ($('span[name=enterInput]').children().remove());
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        );
       }
       if (selected.val() == 1) {
-        if ($('span[name=enterInput]').children().remove()) {
-          $('span[name=enterInput]').append('<select name="keyword" id="keyword"><option value="01">' 
-              + '자유' + '</option><option value="02">' + '익명' + '</option><option value="03">' + 'QnA' + '</option></select>')
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        ) {
+          $('span[name=enterInput]').append(
+            '<select name="keyword" id="keyword"><option value="01">' +
+              '자유' +
+              '</option><option value="02">' +
+              '익명' +
+              '</option><option value="03">' +
+              'QnA' +
+              '</option></select>'
+          );
         }
       }
       if (selected.val() == 2) {
-        if ($('span[name=enterInput]').children().remove()) {
-          $('span[name=enterInput]').append('<input type=text name="keyword" id="keyword" placeholder="글제목">');
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        ) {
+          $('span[name=enterInput]').append(
+            '<input type=text name="keyword" id="keyword" placeholder="글제목">'
+          );
         }
       }
       if (selected.val() == 3) {
-        if ($('span[name=enterInput]').children().remove()) {
-          $('span[name=enterInput]').append('<input type=text name="keyword" id="keyword" placeholder="글내용">');
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        ) {
+          $('span[name=enterInput]').append(
+            '<input type=text name="keyword" id="keyword" placeholder="글내용">'
+          );
         }
       }
       if (selected.val() == 4) {
-        if ($('span[name=enterInput]').children().remove()) {
-          $('span[name=enterInput]').append('<input type=text name="keyword" id="searchNum" placeholder="글번호">');
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        ) {
+          $('span[name=enterInput]').append(
+            '<input type=text name="keyword" id="searchNum" placeholder="글번호">'
+          );
         }
       }
       if (selected.val() == 5) {
-        if ($('span[name=enterInput]').children().remove()) {
-          $('span[name=enterInput]').append('<input type=text name="keyword" id="keyword" placeholder="글쓴이">');
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        ) {
+          $('span[name=enterInput]').append(
+            '<input type=text name="keyword" id="keyword" placeholder="글쓴이">'
+          );
         }
       }
       if (selected.val() == 6) {
-        if ($('span[name=enterInput]').children().remove()) {
-          $('span[name=enterInput]').append('<input type=text name="startDate" id="startDate" placeholder="시작"> <input type=text name="endDate" id="endDate" placeholder="종료">');
+        if (
+          $('span[name=enterInput]')
+            .children()
+            .remove()
+        ) {
+          $('span[name=enterInput]').append(
+            '<input type=text name="startDate" id="startDate" placeholder="시작"> <input type=text name="endDate" id="endDate" placeholder="종료">'
+          );
         }
       }
 
       // 숫자만 입력 regExp
       $('input[id="searchNum"]').on('input', function() {
-        this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+        this.value = this.value
+          .replace(/[^0-9.]/g, '')
+          .replace(/(\..*)\./g, '$1');
       });
     });
   });
-  function search(page){
+  function search(page) {
     console.log(1);
     var keyword = $('#keyword').val();
-    var searchType = $('#searchType').val(); 
-    var startDate = $('#startDate').val(); 
-    var endDate = $('#endDate').val(); 
+    var searchType = $('#searchType').val();
+    var startDate = $('#startDate').val();
+    var endDate = $('#endDate').val();
     var page = page;
     // 빈 값 처리
-    if(keyword == "" || startDate == "" || endDate == "") {
+    if (keyword == '' || startDate == '' || endDate == '') {
       alert('값을 입력해주세요');
       $('input[name=keyword]').focus();
       $('#startDate').focus();
@@ -350,20 +397,20 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
       return false;
     } else {
       $.ajax({
-        url: "./list.ino",
+        url: './list.ino',
         data: {
           keyword: keyword,
           searchType: searchType,
           startDate: startDate,
           endDate: endDate,
-          page: page
+          page: page,
         },
         success: function(data) {
           //console.log(1)
-          $('#tb').html("");
-          $('#pageBar').html("");
-          var str = "";
-          var str2 = "";
+          $('#tb').html('');
+          $('#pageBar').html('');
+          var str = '';
+          var str2 = '';
           var list = data.list;
           var pageInfo = data.pageInfo;
           console.log(pageInfo);
@@ -372,25 +419,34 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
           var maxPage = data.pageInfo.maxPage;
           var endPage = data.pageInfo.endPage;
           var listLimit = data.pageInfo.listLimit;
-            $.each(list, function(i) {
-              str += '<tr id="rowBoardList" name="rowBoardList"><td style="width: 5px;"><input name="deleteBox" type="checkbox" value="' 
-                  + list[i].num + '"/></td><td style="width: 55px; padding-left: 30px;" align="center">' 
-                  + list[i].codeType + '</td><td style="width: 50px; padding-left: 10px;" align="center">' 
-                  + list[i].num + '</td><td style="width: 125px; align="center"><a href="./freeBoardDetail.ino?num=' + list[i].num + '">' 
-                  + list[i].title + '</a></td><td style="width: 48px; padding-left: 50px;" align="center">' 
-                  + list[i].name + '</td><td style="width: 100px; padding-left: 95px;" align="center">' 
-                  + list[i].regdate + '</td><tr>';
-            });
+          $.each(list, function(i) {
+            str +=
+              '<tr id="rowBoardList" name="rowBoardList"><td style="width: 5px;"><input name="deleteBox" type="checkbox" value="' +
+              list[i].num +
+              '"/></td><td style="width: 55px; padding-left: 30px;" align="center">' +
+              list[i].codeType +
+              '</td><td style="width: 50px; padding-left: 10px;" align="center">' +
+              list[i].num +
+              '</td><td style="width: 125px; align="center"><a href="./freeBoardDetail.ino?num=' +
+              list[i].num +
+              '">' +
+              list[i].title +
+              '</a></td><td style="width: 48px; padding-left: 50px;" align="center">' +
+              list[i].name +
+              '</td><td style="width: 100px; padding-left: 95px;" align="center">' +
+              list[i].regdate +
+              '</td><tr>';
+          });
           $('#tb').append(str);
-            for (var a = startPage; a <= endPage; a++) {
-              str2 += '<a href=javascript:search('+a+')>' + a + '</a>';
-            }
-            console.log(str2);
+          for (var a = startPage; a <= endPage; a++) {
+            str2 += '<a href=javascript:search(' + a + ')>' + a + '</a>';
+          }
+          console.log(str2);
           $('#pageBar').append(str2);
         },
         error: function(e) {
           console.log(e);
-        }
+        },
       });
     }
   }
@@ -399,107 +455,107 @@ public List<FreeBoardDto> freeBoardList(Map<String, Object> map) {
 > Insert View
 ```javascript
 <script type="text/javascript">
-    // null
-    $(document).ready(function() {
-        $('#submitBtn').on('click', function() {
-            var codeType = $('#selectedOption').val();
-            var name = $('#name').val();
-            var content = $('#content').val();
-            var title = $('#title').val();
-    
-        if (name == "" || name.length == 0) {
-            alert('이름을 입력해주세요!');
-            $('#name').focus();
-            return false;
-        } else if (title == "" || title.length == 0) {
-            alert('이름을 입력해주세요!');
-            $('#title').focus();
-            return false;
-        } else {
+  // null
+  $(document).ready(function() {
+    $('#submitBtn').on('click', function() {
+      var codeType = $('#selectedOption').val();
+      var name = $('#name').val();
+      var content = $('#content').val();
+      var title = $('#title').val();
+
+      if (name == '' || name.length == 0) {
+        alert('이름을 입력해주세요!');
+        $('#name').focus();
+        return false;
+      } else if (title == '' || title.length == 0) {
+        alert('이름을 입력해주세요!');
+        $('#title').focus();
+        return false;
+      } else {
         // cf 조건문 수행
         var cf = confirm('작성하시겠습니까?');
         if (cf) {
-            $.ajax({
-                url: "./freeBoardInsertPro.ino",
-                type: 'post',
-                data: {
-                    codeType: codeType,
-                    name: name,
-                    title: title,
-                    content: content
-                },
-                success: function(data) {
-                    if (data.result) {
-                        alert("게시글이 등록되었습니다.");
-                        var agree = confirm('메인페이지로 이동하시겠습니까?');
-                    if (agree) {
-                        location.href = "./main.ino";
-                    } else {
-                        location.href = "./freeBoardDetail.ino?num=" + data.maxNum;
-                    }
-            } else {
-                    // Exception 발생 시
-                    alert('게시글 등록을 실패하였습니다.');
-                    var dataMessage = data.message;
-                    $('#printMessage').html(dataMessage);
-                }
+          $.ajax({
+            url: './freeBoardInsertPro.ino',
+            type: 'post',
+            data: {
+              codeType: codeType,
+              name: name,
+              title: title,
+              content: content,
             },
-                error: function(e) {
-                    console.log(e);
-                        }
-                    });
+            success: function(data) {
+              if (data.result) {
+                alert('게시글이 등록되었습니다.');
+                var agree = confirm('메인페이지로 이동하시겠습니까?');
+                if (agree) {
+                  location.href = './main.ino';
+                } else {
+                  location.href = './freeBoardDetail.ino?num=' + data.maxNum;
                 }
-            }; 
-        });
+              } else {
+                // Exception 발생 시
+                alert('게시글 등록을 실패하였습니다.');
+                var dataMessage = data.message;
+                $('#printMessage').html(dataMessage);
+              }
+            },
+            error: function(e) {
+              console.log(e);
+            },
+          });
+        }
+      }
     });
+  });
 </script>
 ```
 > Delete View
 ```javascript
 <script type="text/javascript">
-    // AJAX로 게시글 수정, 삭제
-    $(function() {
-        $('#modifyDetail').on('click', function() {
-                var codeType = $('#codeType').val();
-                var num = $('#num').val();
-                var content = $('#content').val();
-                var title = $('#title').val();
-    
-                // cf 조건문 수행
-                var cf = confirm('수정하시겠습니까?');
-                if (cf) {
-                    $.ajax({
-                        url: "./freeBoardModify.ino",
-                        type: 'post',
-                        data: {
-                            codeType: codeType,
-                num: num,
-                title: title,
-                content: content
-                },
-                success: function(data) {
-                if (data.result) {
-                    // try 성공
-                    alert('게시글 수정을 성공하였습니다.');
-                    var agree = confirm('메인페이지로 이동하시겠습니까?');
-                    if (agree) {
-                        location.href = "./main.ino";	
-                    } else {
-                        location.href = "./freeBoardDetail.ino?num=" + data.num;
-                    }
-                } else {
-                    // Exception 발생 시 
-                    alert('게시글 수정을 실패하였습니다.');
-                    dataMessage = data.message;
-                    $('#printMessage').html(dataMessage);
-                    }
-                },
-                error: function(e) {
-                        console.log(e);
-                    }
-                });
+  // AJAX로 게시글 수정, 삭제
+  $(function() {
+    $('#modifyDetail').on('click', function() {
+      var codeType = $('#codeType').val();
+      var num = $('#num').val();
+      var content = $('#content').val();
+      var title = $('#title').val();
+
+      // cf 조건문 수행
+      var cf = confirm('수정하시겠습니까?');
+      if (cf) {
+        $.ajax({
+          url: './freeBoardModify.ino',
+          type: 'post',
+          data: {
+            codeType: codeType,
+            num: num,
+            title: title,
+            content: content,
+          },
+          success: function(data) {
+            if (data.result) {
+              // try 성공
+              alert('게시글 수정을 성공하였습니다.');
+              var agree = confirm('메인페이지로 이동하시겠습니까?');
+              if (agree) {
+                location.href = './main.ino';
+              } else {
+                location.href = './freeBoardDetail.ino?num=' + data.num;
+              }
+            } else {
+              // Exception 발생 시
+              alert('게시글 수정을 실패하였습니다.');
+              dataMessage = data.message;
+              $('#printMessage').html(dataMessage);
             }
+          },
+          error: function(e) {
+            console.log(e);
+          },
         });
+      }
     });
+  });
 </script>
 ```
